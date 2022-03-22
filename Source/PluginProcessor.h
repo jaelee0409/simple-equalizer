@@ -11,11 +11,19 @@
 #include <JuceHeader.h>
 #include <JucePluginDefines.h>
 
+enum Slope
+{
+    Slope_12,
+    Slope_24,
+    Slope_36,
+    Slope_48
+};
+
 struct ChainSettings
 {
-  float peakFreq { 0 }, peakGainInDecibels { 0 }, peakQuality { 1.f };
-  float lowCutFreq { 0 }, highCutFreq { 0 };
-  int lowCutSlope { 0 }, highCutSlope { 0 };  
+    float peakFreq { 0 }, peakGainInDecibels { 0 }, peakQuality { 1.f };
+    float lowCutFreq { 0 }, highCutFreq { 0 };
+    Slope lowCutSlope { Slope::Slope_12 }, highCutSlope { Slope::Slope_12 };  
 };
 
 ChainSettings getChainSettings (juce::AudioProcessorValueTreeState& apvts);
@@ -34,9 +42,9 @@ public:
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-   #ifndef JucePlugin_PreferredChannelConfigurations
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
+    #ifndef JucePlugin_PreferredChannelConfigurations
+        bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
+    #endif
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
