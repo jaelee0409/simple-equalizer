@@ -16,8 +16,25 @@ struct CustomRotarySlider : juce::Slider
     CustomRotarySlider() : juce::Slider (juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
                                          juce::Slider::TextEntryBoxPosition::NoTextBox)
     {
-
     }
+};
+
+struct ResponseCurveComponent : public juce::Component,
+                                       juce::AudioProcessorParameter::Listener,
+                                       juce::Timer
+{
+    ResponseCurveComponent (SimpleEQAudioProcessor&);
+    ~ResponseCurveComponent();
+
+    void parameterValueChanged (int parameterIndex, float newValue) override;
+    void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override { }
+    void timerCallback() override;
+    void paint (juce::Graphics& g) override;
+
+private:
+    SimpleEQAudioProcessor& audioProcessor;
+    juce::Atomic<bool> parametersChanged { false };
+    MonoChain monoChain;
 };
 
 //==============================================================================
@@ -45,6 +62,8 @@ private:
                        highCutFreqSlider,
                        lowCutSlopeSlider,
                        highCutSlopeSlider;
+
+    ResponseCurveComponent responseCurveComponent;
 
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
